@@ -10,7 +10,7 @@ public class ChunkEncoder extends InputStream {
 
     protected volatile InputStream in;
     protected Chunker chunker;
-    private int skiped = 0;
+    private int size = 0;
 
     public ChunkEncoder(){
         super();
@@ -26,17 +26,20 @@ public class ChunkEncoder extends InputStream {
         return in.read();
     }
 
-    public String readBytes() throws IOException {
+    public int read(byte[] bytes) throws IOException {
         StringBuilder res = new StringBuilder();
         while (setChunkerSize()){
             byte[] b = new byte[chunker.getChunkSize()];
             for (int i = 0; i < b.length ; i++) {
                 b[i] = (byte)in.read();
+                size++;
             }
             res.append(new String(b,"cp1251"));
             in.skip(2);
+            size+=2;
         }
-        return res.toString();
+        bytes = String.valueOf(res).getBytes();
+        return size;
     }
 
     private boolean setChunkerSize() throws IOException{
@@ -45,6 +48,7 @@ public class ChunkEncoder extends InputStream {
         String eol = "";
         while (!eol.equals(Chunker.EOL)){
             head = head+(char)in.read();
+            size++;
             if (head.length()>=2){
                 eol = head.substring(head.length()-2);
             }

@@ -19,8 +19,8 @@ public class Main {
         FileInputStream is = new FileInputStream("c:\\java\\serialize_chunked.txt");
         ChunkEncoder ce = new ChunkEncoder(is, new Chunker());
         BufferedWriter bw = new BufferedWriter(new FileWriter("c:\\java\\serialize_unchunked.txt"));
-        String res = ce.readBytes();
-        bw.write(res);
+        ce.read(buf);
+        bw.write(new String (buf,"CP1251"));
         bw.flush();
         bw.close();
     }
